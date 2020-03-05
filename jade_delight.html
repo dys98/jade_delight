@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Jade Delight</title>
+</head>
+
+<body>
+
+    <script language="javascript">
+
+        function MenuItem(name, cost)
+        {
+            this.name = name;
+            this.cost=cost;
+        }
+
+        menuItems = new Array(
+            new MenuItem("Chicken Chop Suey", 4.5),
+            new MenuItem("Sweet and Sour Pork", 6.25),
+            new MenuItem("Shrimp Lo Mein", 5.25),
+            new MenuItem("Moo Shi Chicken", 6.5),
+            new MenuItem("Fried Rice", 2.35)
+        );
+
+        function makeSelect(name, minRange, maxRange)
+        {
+            var t= "";
+           t = "<select name='" + name + "' size='1'>";
+           for (j=minRange; j<=maxRange; j++)
+              t += "<option>" + j + "</option>";
+           t+= "</select>"; 
+           return t;
+        }
+    </script>
+
+    <h1>Jade Delight</h1>
+
+    <form>
+
+        <p>First Name: <input type="text"  name='fname' /></p>
+        <p>Last Name*:  <input type="text"  name='lname' /></p>
+        <p>Street: <input type="text"  name='street' /></p>
+        <p>City: <input type="text"  name='city' /></p>
+        <p>Phone*: <input type="text"  name='phone' /></p>
+        <p> 
+            <input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup  
+            <input type="radio"  name='p_or_d' value = 'delivery'/>
+            Delivery
+        </p>
+
+        <table border="0" cellpadding="3">
+            <tr>
+                <th>Select Item</th>
+                <th>Item Name</th>
+                <th>Cost Each</th>
+                <th>Total Cost</th>
+            </tr>
+            <script language="javascript">
+                var s = "";
+                for (i=0; i< menuItems.length; i++)
+                {
+                    s += "<tr><td>";
+                    s += makeSelect("quan" + i, 0, 10);
+                    s += "</td><td>" + menuItems[i].name + "</td>";
+                    s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+                    s += "<td>$<input type='text' name='cost'/></td></tr>";
+                }
+                document.writeln(s);
+            </script>
+        </table>
+
+        <p>Subtotal: 
+            $<input type="text"  name='subtotal' id="subtotal" />
+        </p>
+        <p>Mass tax 6.25%:
+            $<input type="text"  name='tax' id="tax" />
+        </p>
+        <p>Total: $ <input type="text"  name='total' id="total" />
+        </p>
+
+        <!-- changed here for submit button -->
+        <input type = "submit" value = "Submit Order" onclick="validateSubmit()"/>
+
+    </form>
+
+
+    <!---------------------------------------------------------
+    ----------------------  Added by Daisy --------------------
+    ---------------------------------------------------------->
+    <!----------------- Additions start here ----------------->
+    <script language="javascript">
+    /******************* Part 1 Starts Here *******************/
+        function setOutputCosts()
+        {
+            for(i=0; i<5; i++){
+                outputCosts[i].value = 0;
+            }
+        }
+
+        sub = 0;
+        tx = 0;
+        tt = 0;
+        subTot = document.getElementsByName("subtotal")[0];
+        taxVal = document.getElementsByName("tax")[0];
+        tot = document.getElementsByName("total")[0];
+
+        outputCosts = document.getElementsByName('cost');
+        setOutputCosts();
+
+        function setEndTotals(){
+            sub = 0;
+            for(s=0; s<5; s++){
+                sub += parseFloat(outputCosts[s].value);
+            }
+            subTot.value = sub.toFixed(2);
+
+            tx = sub*0.0625;
+            taxVal.value = tx.toFixed(2);
+
+            tt = sub + tx;
+            tot.value = tt.toFixed(2);
+        }
+
+        
+        // calculates Chicken Chop Suey cost
+        ccsItems = document.getElementsByName("quan0")[0];
+        ccsItems.onchange = function(event){
+            numItems = ccsItems.selectedIndex;
+            ccsCost = numItems*menuItems[0].cost;
+            outputCosts[0].value = ccsCost.toFixed(2);
+            setEndTotals();
+        }
+
+        // calculates Sweet and Sour Pork cost
+        sspItems = document.getElementsByName("quan1")[0];
+        sspItems.onchange = function(event){
+            numItems = sspItems.selectedIndex;
+            sspCost = numItems*menuItems[1].cost;
+            outputCosts[1].value = sspCost.toFixed(2);
+            setEndTotals();
+        }
+        
+        // calculates Shrimp Lo Mein cost
+        slmItems = document.getElementsByName("quan2")[0];
+        slmItems.onchange = function(event){
+            numItems = slmItems.selectedIndex;
+            slmCost = numItems*menuItems[2].cost;
+            outputCosts[2].value = slmCost.toFixed(2);
+            setEndTotals();
+        }
+
+        // calculates Moo Shi Chicken cost
+        mscItems = document.getElementsByName("quan3")[0];
+        mscItems.onchange = function(event){
+            numItems = mscItems.selectedIndex;
+            mscCost = numItems*menuItems[3].cost;
+            outputCosts[3].value = mscCost.toFixed(2);
+            setEndTotals();
+        }
+
+        // calculates Fried Rice cost
+        frItems = document.getElementsByName("quan4")[0];
+        frItems.onchange = function(event){
+            numItems = frItems.selectedIndex;
+            frCost = numItems*menuItems[4].cost;
+            outputCosts[4].value = frCost.toFixed(2);
+            setEndTotals();
+        }
+
+        
+        setEndTotals();
+
+    /******************* Part 2 Starts Here *******************/
+        // calculates delivery time
+        function calcTime(oldHr, oldMin, increment){
+            addHr = 0;
+
+            newMin = oldMin + increment;
+            if(newMin > 59){
+                addHr = 1;
+            }
+            newMin = newMin%60;
+
+            newHr = oldHr + addHr;
+            newHr = newHr%24;
+
+
+            if(newMin.toString().length == 1){
+                newMin = "0" + newMin;
+            }
+
+            if(newHr.toString().length == 1){
+                newHr = "0" + newHr;
+            }
+
+            newTime = new Array(2);
+            newTime[0] = newHr;
+            newTime[1] = newMin;
+
+            return newTime; 
+        }
+        
+        
+        // checking collection of values 
+        function validateSubmit(){
+            
+            valid = true;
+
+            // checking last name 
+            last = document.getElementsByName("lname")[0].value;
+            if(last == ""){
+                valid = false;
+                alert("Enter Last Name.");
+            }
+
+            // checking phone number
+            num = document.getElementsByName("phone")[0].value;
+            if(num == ""){
+                valid = false;
+                alert("Enter Phone Number.");
+            } else {
+                inputPhone = num.split("-");
+
+                if(inputPhone.length == 1){
+                    if(inputPhone[0].length != 10){
+                        valid = false;
+                        alert("Phone Number must be 10 digits.");
+                    }
+                } else {
+                    inputNum = "";
+                    for(i=0; i<inputPhone.length; i++){
+                        inputNum += inputPhone[i];
+                    }
+                    if(inputNum.length != 10){
+                        valid = false;
+                        alert("Phone Number must be 10 digits.");
+                    }
+                }
+            }
+
+            // check delivery type
+            methodType = document.getElementsByName("p_or_d");
+            currDate = new Date();
+
+            selectMethod = "";
+            delivTime = new Array(2);
+
+            if(methodType[0].checked == true){
+                selectMethod = "Pickup";
+
+                // calculate pickup time
+                delivTime = calcTime(currDate.getHours(), currDate.getMinutes(), 15);
+            } else {
+                selectMethod = "Delivery";
+
+                // calculate delivery time
+                delivTime = calcTime(currDate.getHours(), currDate.getMinutes(), 30);
+                
+                // street and city required
+                
+                // check street entered
+                st = document.getElementsByName("street")[0].value;
+                if(st == ""){
+                    valid = false;
+                    alert("Enter Street for Delivery.");
+                }
+                
+                // check city entered
+                ct = document.getElementsByName("city")[0].value;
+                if(ct == ""){
+                    valid = false;
+                    alert("Enter City for Delivery.");
+                }
+                
+            }
+            
+            // messages for no validation issues
+            if(valid == true){
+                document.writeln("Thank you for your order!");
+                document.writeln("<br>" + selectMethod + " ready at " + delivTime[0] + ":" + delivTime[1] + ".");
+                document.writeln("<br>Total Cost: " + tot.value + ".");
+            }
+
+        }
+    </script>
+    <!------------------ Additions end here ------------------>
+
+</body>
+
+</html>
